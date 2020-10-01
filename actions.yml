@@ -1,0 +1,13 @@
+name: 'Delete Release'
+description: 'Delete a Release by its Name'
+inputs:
+  release-name:  # id of input
+    description: 'name of the release to delete'
+    required: true
+    default: 'World'
+outputs:
+  time: # id of output
+    description: 'The time we greeted you'
+runs:
+  using: 'node12'
+  main: 'index.js'
