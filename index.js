@@ -36,7 +36,8 @@ async function run() {
               console.log(release);
               console.log(`${release.name} === ${releaseName}`);
               return release.name === releaseName;
-          })
+          }).data;
+          
         await deleteRelease(commonOpts, owner, repo, release.id);
 
 
