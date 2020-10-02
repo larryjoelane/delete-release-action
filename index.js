@@ -32,12 +32,12 @@ async function run() {
         const releases = await getReleases(commonOpts, owner, repo);
         console.log(releases)
 
-        const release = releases.filter(release => {
+        const release = releases.data.filter(release => {
               console.log(release);
               console.log(`${release.name} === ${releaseName}`);
               return release.name === releaseName;
-          }).data;
-          
+          });
+
         await deleteRelease(commonOpts, owner, repo, release.id);
 
 
