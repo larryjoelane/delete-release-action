@@ -4,7 +4,7 @@ inputs:
   release-name:  # id of input
     description: 'name of the release to delete'
     required: true
-    default: 'World'
+    default: 'example-release'
 outputs:
   time: # id of output
     description: 'The time we greeted you'
