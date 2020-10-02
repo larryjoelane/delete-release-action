@@ -27,7 +27,7 @@ async function run() {
             },
         };
 
-        const release = await getReleases(commonOpts, owner, repo)
+        const release = (await getReleases(commonOpts, owner, repo))
           .filter(release => {
               console.log(release);
               console.log(`${release.name} === ${releaseName}`);
