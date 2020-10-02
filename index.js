@@ -26,7 +26,11 @@ async function run() {
         };
 
         const release = (await getReleases(commonOpts, owner, repo))
-          .filter(release => release.name === releaseName)
+          .filter(release => {
+              console.log(release);
+              console.log(`${release.name} === ${releaseName}`);
+              return release.name === releaseName
+          })
         await deleteRelease(commonOpts, owner, repo, release.id);
 
 
@@ -38,7 +42,7 @@ async function run() {
 async function deleteTag(commonOpts, owner, repo, tagName) {
     return await fetch({
         ...commonOpts,
-        url: `/repos/${owner}/${repo}/git/refs/tags/${tagName}`,
+        url: `https://api.github.com/repos/${owner}/${repo}/git/refs/tags/${tagName}`,
         method: "DELETE",
     })
         .catch(error => errorHandler(error.message, core, 'deleteTag(commonOpts, owner, repo, tagName)'));;
@@ -47,7 +51,7 @@ async function deleteTag(commonOpts, owner, repo, tagName) {
 async function deleteRelease(commonOpts, owner, repo, releaseId) {
     return await fetch({
         ...commonOpts,
-        url: `/repos/${owner}/${repo}/releases/${releaseId}`,
+        url: `https://api.github.com/repos/${owner}/${repo}/releases/${releaseId}`,
         method: "DELETE",
     })
         .catch(error => errorHandler(error.message, core, 'deleteRelease(commonOpts, owner, repo, releaseId)'));
@@ -56,7 +60,7 @@ async function deleteRelease(commonOpts, owner, repo, releaseId) {
 async function getReleases(commonOpts, owner, repo) {
     return await fetch({
         ...commonOpts,
-        url: `/repos/${owner}/${repo}/releases`,
+        url: `https://api.github.com/repos/${owner}/${repo}/releases`,
         method: "GET",
     })
         .catch(error => {
