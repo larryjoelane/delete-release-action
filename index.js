@@ -2,51 +2,53 @@ const core = require('@actions/core');
 const github = require('@actions/github');
 const fetch = require("./fetch");
 
-try {
-    const releaseName = core.getInput('release-name');
+async function run() {
+    try {
+        const releaseName = core.getInput('release-name');
 
-    // Get the JSON webhook payload for the event that triggered the workflow
-    const payload = JSON.stringify(github.context.payload, undefined, 2)
+        // Get the JSON webhook payload for the event that triggered the workflow
+        const payload = JSON.stringify(github.context.payload, undefined, 2)
 
-    if (!process.env.GITHUB_TOKEN) {
-        console.error("no GITHUB_TOKEN found. pass `GITHUB_TOKEN` as env");
-        process.exitCode = 1;
-        return;
+        if (!process.env.GITHUB_TOKEN) {
+            console.error("no GITHUB_TOKEN found. pass `GITHUB_TOKEN` as env");
+            process.exitCode = 1;
+            return;
+        }
+        const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+        if (!process.env.INPUT_REPO) {
+            console.warn("no `repo` name given. fall-ing back to this repo");
+        }
+
+        const [owner, repo] = (
+            process.env.INPUT_REPO || process.env.GITHUB_REPOSITORY
+        ).split("/");
+
+        if (!owner || !repo) {
+            const error = new error({
+                message: "either owner or repo name is empty. exiting..."
+            });
+            errorHandler(error, core)
+        }
+
+        const commonOpts = {
+            host: "api.github.com",
+            port: 443,
+            protocol: "https:",
+            auth: `user:${GITHUB_TOKEN}`,
+            headers: {
+                "Content-Type": "application/json",
+                "User-Agent": "node.js",
+            },
+        };
+
+        const release = await getReleases(commonOpts, owner, repo).filter(release => release.name === releaseName)
+        await deleteRelease(commonOpts, owner, repo, release.id);
+
+
+    } catch (ex) {
+        errorHandler(ex, core);
     }
-    const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-
-    if (!process.env.INPUT_REPO) {
-        console.warn("no `repo` name given. fall-ing back to this repo");
-    }
-
-    const [owner, repo] = (
-        process.env.INPUT_REPO || process.env.GITHUB_REPOSITORY
-    ).split("/");
-
-    if (!owner || !repo) {
-        const error = new error({
-            message:"either owner or repo name is empty. exiting..."
-        });
-        errorHandler(error, core)
-    }
-
-    const commonOpts = {
-        host: "api.github.com",
-        port: 443,
-        protocol: "https:",
-        auth: `user:${GITHUB_TOKEN}`,
-        headers: {
-            "Content-Type": "application/json",
-            "User-Agent": "node.js",
-        },
-    };
-
-    const release = await getReleases(commonOpts, owner, repo).filter(release => release.name === releaseName)
-    await deleteRelease(commonOpts, owner, repo, release.id);
-
-
-} catch (ex) {
-    errorHandler(ex, core);
 }
 
 async function deleteTag(commonOpts, owner, repo, tagName) {
@@ -82,3 +84,5 @@ function errorHandler(error, core) {
     core.setFailed(error.message);
     return;
 }
+
+run();
