@@ -9,11 +9,6 @@ async function run() {
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(github.context.payload, undefined, 2)
 
-        if (!process.env.GITHUB_TOKEN) {
-            console.error("no GITHUB_TOKEN found. pass `GITHUB_TOKEN` as env");
-            process.exitCode = 1;
-            return;
-        }
         const GITHUB_TOKEN = core.getInput('token');
 
         if (!process.env.INPUT_REPO) {
