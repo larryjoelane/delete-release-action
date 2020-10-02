@@ -9,28 +9,10 @@ async function run() {
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(github.context.payload, undefined, 2)
 
-        // debugging only
-        const owner = 'lockton';
-        const repo = 'benefits';
-
-        console.log(payload);
+        const owner = github.context.payload.repository.owner.name;
+        const repo = github.context.payload.repository.name;
 
         const GITHUB_TOKEN = core.getInput('token');
-
-        // if (!process.env.INPUT_REPO) {
-        //     console.warn("no `repo` name given. fall-ing back to this repo");
-        // }
-
-        // const [owner, repo] = (
-        //     process.env.INPUT_REPO || process.env.GITHUB_REPOSITORY
-        // ).split("/");
-
-        // if (!owner || !repo) {
-        //     const error = new error({
-        //         message: "either owner or repo name is empty. exiting..."
-        //     });
-        //     errorHandler(error, core)
-        // }
 
         const commonOpts = {
             host: "api.github.com",
@@ -86,7 +68,7 @@ async function getReleases(commonOpts, owner, repo) {
 function errorHandler(error, core, functionName) {
     console.error(error.message, functionName)
     process.exitCode = 1;
-    // core.setFailed(error.message);
+    core.setFailed(error.message);
     return error;
 }
 
