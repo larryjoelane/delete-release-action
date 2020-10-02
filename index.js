@@ -14,7 +14,7 @@ async function run() {
             process.exitCode = 1;
             return;
         }
-        const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+        const GITHUB_TOKEN = core.getInput('token');
 
         if (!process.env.INPUT_REPO) {
             console.warn("no `repo` name given. fall-ing back to this repo");
