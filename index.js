@@ -29,13 +29,10 @@ async function run() {
 
         const releases = await getReleases(commonOpts, owner, repo);
 
-        const release = releases.data.filter(release => {
-              return release.name === releaseName;
-          }).pop();
-
-        console.log('*****begin*****');
-        console.log(release);
-        console.log('*****end*****');
+        const release = releases.data
+          .find(release => 
+              release.tag_name === releaseName
+          );
 
         await deleteRelease(commonOpts, owner, repo, release.id);
 
