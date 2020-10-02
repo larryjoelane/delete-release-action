@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const fetch = require('axios');
+const octokit = require('@octokit/request');
 
 async function run() {
     try {
@@ -22,10 +22,12 @@ async function run() {
             headers: {
                 "Content-Type": "application/json",
                 "User-Agent": "node.js",
+                "Authorization": `token ${GITHUB_TOKEN}`,
+                "Accept": "application/vnd.github.v3+json"
             },
         };
 
-        const release = (await getReleases(commonOpts, owner, repo))
+        const release = await getReleases(commonOpts, owner, repo)
           .filter(release => {
               console.log(release);
               console.log(`${release.name} === ${releaseName}`);
@@ -40,29 +42,33 @@ async function run() {
 }
 
 async function deleteTag(commonOpts, owner, repo, tagName) {
-    return await fetch({
-        ...commonOpts,
-        url: `https://api.github.com/repos/${owner}/${repo}/git/refs/tags/${tagName}`,
-        method: "DELETE",
-    })
+
+    return await octokit.request('DELETE /repos/{owner}/{repo}/git/refs/tags/{tagName}', {
+        owner: owner,
+        repo: repo,
+        tagName: tagName,
+        headers: commonOpts.headers
+      })
         .catch(error => errorHandler(error.message, core, 'deleteTag(commonOpts, owner, repo, tagName)'));;
 }
 
 async function deleteRelease(commonOpts, owner, repo, releaseId) {
-    return await fetch({
-        ...commonOpts,
-        url: `https://api.github.com/repos/${owner}/${repo}/releases/${releaseId}`,
-        method: "DELETE",
-    })
+
+    return await octokit.request('DELETE /repos/{owner}/{repo}/releases/{releaseId}', {
+        owner: owner,
+        repo: repo,
+        releaseId: releaseId,
+        headers: commonOpts.headers
+      })
         .catch(error => errorHandler(error.message, core, 'deleteRelease(commonOpts, owner, repo, releaseId)'));
 }
 
 async function getReleases(commonOpts, owner, repo) {
-    return await fetch({
-        ...commonOpts,
-        url: `https://api.github.com/repos/${owner}/${repo}/releases`,
-        method: "GET",
-    })
+    return await octokit.request('GET /repos/{owner}/{repo}/releases', {
+        owner: owner,
+        repo: repo,
+        headers: commonOpts.headers
+      })
         .catch(error => {
             console.log(error);
             errorHandler(error.message, 'getReleases(commonOpts, owner, repo)');

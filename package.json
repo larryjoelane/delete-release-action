@@ -12,6 +12,6 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
-    "axios": "^0.20.0"
+    "@octokit/request": "^5.4.9"
   }
 }
