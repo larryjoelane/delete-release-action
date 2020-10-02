@@ -31,7 +31,7 @@ async function run() {
 
         const release = releases.data.filter(release => {
               return release.name === releaseName;
-          });
+          }).pop();
 
         console.log('*****begin*****');
         console.log(release);
