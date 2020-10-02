@@ -9,8 +9,10 @@ async function run() {
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(github.context.payload, undefined, 2)
 
-        const owner = github.context.payload.repository.owner.name;
-        const repo = github.context.payload.repository.name;
+        // const owner = github.context.payload.repository.owner.name;
+        // const repo = github.context.payload.repository.name;
+        const owner = 'Lockton-Companies';
+        const repo = 'benefits';
 
         const GITHUB_TOKEN = core.getInput('token');
 
@@ -27,11 +29,13 @@ async function run() {
             },
         };
 
-        const release = (await getReleases(commonOpts, owner, repo))
-          .filter(release => {
+        const releases = await getReleases(commonOpts, owner, repo);
+        console.log(releases)
+
+        const release = releases.filter(release => {
               console.log(release);
               console.log(`${release.name} === ${releaseName}`);
-              return release.name === releaseName
+              return release.name === releaseName;
           })
         await deleteRelease(commonOpts, owner, repo, release.id);
 
