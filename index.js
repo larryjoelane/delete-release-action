@@ -35,6 +35,7 @@ async function run() {
           );
 
         await deleteRelease(commonOpts, owner, repo, release.id);
+        await deleteTag(commonOpts, owner, repo, release.tag_name);
 
 
     } catch (ex) {

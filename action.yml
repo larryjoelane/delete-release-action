@@ -9,9 +9,6 @@ inputs:
     description: 'github token should be pulled from a secret'
     required: true
     default: ''
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
 runs:
   using: 'node12'
   main: 'index.js'
