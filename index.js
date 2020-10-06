@@ -12,6 +12,7 @@ async function run() {
         const owner = github.context.payload.repository.owner.name;
         const repo = github.context.payload.repository.name;
 
+
         const GITHUB_TOKEN = core.getInput('token');
 
         const commonOpts = {
@@ -30,12 +31,13 @@ async function run() {
         const releases = await getReleases(commonOpts, owner, repo);
 
         const release = releases.data
-            .find(release =>
+            .find(release => release && release.tag_name &&
                 release.tag_name === releaseName
             );
 
         if (!release && !release.id && !release.tag_name) {
-            errorHandler({ message: `${releaseName} not found, please provide a valid release name`} , core, functionName); 
+            // errorHandler({ message: `${releaseName} not found, please provide a valid release name`} , core, functionName);
+            console.log(`${releaseName} not found, please provide a valid release name`);
         }
 
         if (release && release.id && release.tag_name) {
