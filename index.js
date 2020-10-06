@@ -30,24 +30,27 @@ async function run() {
 
         const releases = await getReleases(commonOpts, owner, repo);
 
+        // const releases = {
+        //     data: [
+
+        //     ]
+        // }
+
         const release = releases.data
             .find(release => release && release.tag_name &&
                 release.tag_name === releaseName
             );
 
-        if (!release && !release.id && !release.tag_name) {
-            // errorHandler({ message: `${releaseName} not found, please provide a valid release name`} , core, functionName);
-            console.log(`${releaseName} not found, please provide a valid release name`);
-        }
+        // if (!release && !release.id && !release.tag_name) {
+        //     // errorHandler({ message: `${releaseName} not found, please provide a valid release name`} , core, functionName);
+        //     console.log(`${releaseName} not found, please provide a valid release name`);
+        // }
 
         if (release && release.id && release.tag_name) {
             await deleteRelease(commonOpts, owner, repo, release.id);
             await deleteTag(commonOpts, owner, repo, release.tag_name);
+            process.exitCode = 0;
         }
-
-
-
-
 
     } catch (ex) {
         errorHandler(ex, core, 'run()');
@@ -66,7 +69,6 @@ async function deleteTag(commonOpts, owner, repo, tagName) {
 }
 
 async function deleteRelease(commonOpts, owner, repo, releaseId) {
-
     return await octokit.request('DELETE /repos/{owner}/{repo}/releases/{releaseId}', {
         owner: owner,
         repo: repo,
