@@ -34,12 +34,11 @@ async function run() {
                 release.tag_name === releaseName
             );
 
-        if (!release) {
-            console.error(`${releaseName} not found, please provide a valid release name`)
-            return 1;
+        if (!release && !release.id && !release.tag_name) {
+            errorHandler({ message: `${releaseName} not found, please provide a valid release name`} , core, functionName); 
         }
 
-        if (release.id && release.tag_name) {
+        if (release && release.id && release.tag_name) {
             await deleteRelease(commonOpts, owner, repo, release.id);
             await deleteTag(commonOpts, owner, repo, release.tag_name);
         }
