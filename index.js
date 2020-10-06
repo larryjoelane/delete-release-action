@@ -30,12 +30,22 @@ async function run() {
         const releases = await getReleases(commonOpts, owner, repo);
 
         const release = releases.data
-          .find(release => 
-              release.tag_name === releaseName
-          );
+            .find(release =>
+                release.tag_name === releaseName
+            );
 
-        await deleteRelease(commonOpts, owner, repo, release.id);
-        await deleteTag(commonOpts, owner, repo, release.tag_name);
+        if (!release) {
+            console.error(`${releaseName} not found, please provide a valid release name`)
+            return 1;
+        }
+
+        if (release.id && release.tag_name) {
+            await deleteRelease(commonOpts, owner, repo, release.id);
+            await deleteTag(commonOpts, owner, repo, release.tag_name);
+        }
+
+
+
 
 
     } catch (ex) {
@@ -50,7 +60,7 @@ async function deleteTag(commonOpts, owner, repo, tagName) {
         repo: repo,
         tagName: tagName,
         headers: commonOpts.headers
-      })
+    })
         .catch(error => errorHandler(error.message, core, 'deleteTag(commonOpts, owner, repo, tagName)'));;
 }
 
@@ -61,7 +71,7 @@ async function deleteRelease(commonOpts, owner, repo, releaseId) {
         repo: repo,
         releaseId: releaseId,
         headers: commonOpts.headers
-      })
+    })
         .catch(error => errorHandler(error.message, core, 'deleteRelease(commonOpts, owner, repo, releaseId)'));
 }
 
@@ -70,7 +80,7 @@ async function getReleases(commonOpts, owner, repo) {
         owner: owner,
         repo: repo,
         headers: commonOpts.headers
-      })
+    })
         .catch(error => {
             console.log(error);
             errorHandler(error.message, 'getReleases(commonOpts, owner, repo)');
