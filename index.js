@@ -9,7 +9,7 @@ async function run() {
         // Get the JSON webhook payload for the event that triggered the workflow
         const payload = JSON.stringify(github.context.payload, undefined, 2)
 
-        const owner = github.context.payload.repository.owner.name;
+        const owner = github.context.payload.repository.owner.login;
         const repo = github.context.payload.repository.name;
 
 
@@ -29,12 +29,6 @@ async function run() {
         };
 
         const releases = await getReleases(commonOpts, owner, repo);
-
-        // const releases = {
-        //     data: [
-
-        //     ]
-        // }
 
         const release = releases.data
             .find(release => release && release.tag_name &&
